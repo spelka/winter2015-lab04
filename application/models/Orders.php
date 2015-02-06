@@ -19,7 +19,19 @@ class Orders extends MY_Model {
 
     // calculate the total for an order
     function total($num) {
-        return 0.0;
+		$order_total = 0.0;
+		//get the list of items from the orderitems database table
+		$orderItemArray = $this->orderitems->some( 'order' , $num );
+		
+		//iterate through the items and find the associated menu price
+		foreach($orderItemArray as $order)
+		{
+			$item = $this->menu->get( 'code' , $order->item);
+			$order_total += ($item->price * $order->quantity);
+		}
+		
+		//return the total
+        return money_format($order_total);
     }
 
     // retrieve the details for an order
